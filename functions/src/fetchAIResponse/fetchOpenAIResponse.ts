@@ -11,7 +11,7 @@ const openai = new OpenAI({
 });
 
 // モデルの指定
-const model = process.env.OPENAI_MODEL as string;
+const model = String(process.env.OPENAI_MODEL);
 
 // OpenAIのレスポンスを取得する関数
 export const fetchOpenAIResponse = async (input: string, prompt: string) => {

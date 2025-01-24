@@ -2,7 +2,11 @@
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jsdom": "^26.0.0",
     "nodemon": "^3.1.9",
     "openai": "^4.80.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7"
   }
 }
