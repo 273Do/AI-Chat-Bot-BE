@@ -1,11 +1,10 @@
 import * as functions from "firebase-functions";
-const express = require("express");
+import express from "express";
+import router from "./routes";
 
 const app = express();
 
-app.get("/hello", (req: any, res: any) => {
-  res.send("Hello Express!");
-});
+app.use("/", router);
 
 const api = functions.https.onRequest(app);
 module.exports = { api };
