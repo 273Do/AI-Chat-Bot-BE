@@ -1,33 +1,28 @@
 import express, { Request, Response } from "express";
 import { fetchOpenAIResponse } from "../fetchAIResponse/fetchOpenAIResponse";
-import GoogleDocsPublicContent from "../fetchAIResponse/fetchPrompt";
+
+import { getPromptMiddleware } from "../middleware";
 
 const router = express.Router();
 
 router
-  .get("/", async (req: Request, res: Response) => {
-    try {
-      const { prompt } = await GoogleDocsPublicContent("20文字以内で答えて。");
-      res.status(200).json({
-        message: "あなたの機能について簡単に教えて",
-        prompt: prompt,
-      });
-    } catch (error: any) {
-      res.status(500).json({
-        error: "OpenAIからのレスポンス取得に失敗しました。",
-        details: error.message,
-      });
-    }
+  .get("/", getPromptMiddleware, async (req: Request, res: Response) => {
+    const processedPrompt = req.body.processedPrompt;
+    res.send(processedPrompt);
   })
-  .get("/openai", async (req: Request, res: Response) => {
+  .get("/openai", getPromptMiddleware, async (req: Request, res: Response) => {
     // OpenAIのレスポンスを取得
     try {
-      const ai_res = await fetchOpenAIResponse(
-        "マークダウンで回答して",
-        "あなたの機能について簡単に教えて"
-      );
+      // リクエストボディからプロンプトとチャットの入力を取得
+      const processedPrompt = req.body.processedPrompt;
+      const input = String(req.body.input);
+
+      // レスポンスを取得
+      const ai_res = await fetchOpenAIResponse(input, processedPrompt);
       res.status(200).json({
+        input: input,
         message: ai_res,
+        prompt: processedPrompt,
       });
     } catch (error: any) {
       res.status(500).json({

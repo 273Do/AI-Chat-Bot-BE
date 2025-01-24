@@ -9,7 +9,7 @@ const docUrl = String(process.env.GOOGLE_DOCS_LINK);
 
 // Google Docsからプロンプトを取得する関数
 export const GoogleDocsPublicContent = async (room_prompt: string) => {
-  let prompt = "";
+  let prompt: string | null = "";
 
   const response = await fetch(docUrl);
   const html = await response.text();
@@ -19,12 +19,15 @@ export const GoogleDocsPublicContent = async (room_prompt: string) => {
 
   // ドキュメントの内容を取得
   const doc = dom.window.document;
-  prompt = doc.querySelector(".doc-content")?.textContent || "";
+  prompt = doc.querySelector(".doc-content")?.textContent || null;
+  if (prompt === null) {
+    return null;
+  }
 
   if (room_prompt !== "") {
     prompt = prompt + "\n追加プロンプト：" + room_prompt;
   }
-  return { prompt };
+  return prompt;
 };
 
 export default GoogleDocsPublicContent;
