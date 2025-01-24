@@ -1,0 +1,15 @@
+version: "3"
+services:
+  firebase:
+    container_name: ai-chat-bot-be
+    build:
+      context: .
+      args:
+        WORKDIR: $WORKDIR
+    volumes:
+      - .:/$WORKDIR
+    ports:
+      - "$FIREBASE_CLI_PORT:$FIREBASE_CLI_PORT"
+      - "$FIREBASE_UI_PORT:$FIREBASE_UI_PORT"
+      - "$FIREBASE_FUNCTIONS_PORT:$FIREBASE_FUNCTIONS_PORT"
+    tty: true
