@@ -4,6 +4,7 @@ import { getPromptMiddleware } from "../middleware";
 
 import { fetchOpenAIResponse } from "../fetchAIResponse/fetchOpenAIResponse";
 import { fetchGeminiResponse } from "../fetchAIResponse/fetchGeminiResponse";
+import { fetchClaudeResponse } from "../fetchAIResponse/fetchClaudeResponse";
 
 const router = express.Router();
 
@@ -50,6 +51,27 @@ router
     } catch (error: any) {
       res.status(500).json({
         error: "Geminiからのレスポンス取得に失敗しました。",
+        details: error.message,
+      });
+    }
+  })
+  .get("/claude", getPromptMiddleware, async (req: Request, res: Response) => {
+    // Claudeのレスポンスを取得
+    try {
+      // リクエストボディからプロンプトとチャットの入力を取得
+      const processedPrompt = req.body.processedPrompt;
+      const input = String(req.body.input);
+
+      // レスポンスを取得
+      const ai_res = await fetchClaudeResponse(input, processedPrompt);
+      res.status(200).json({
+        input: input,
+        message: ai_res,
+        prompt: processedPrompt,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        error: "Claudeからのレスポンス取得に失敗しました。",
         details: error.message,
       });
     }

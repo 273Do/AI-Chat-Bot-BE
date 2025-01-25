@@ -4,6 +4,7 @@ import * as dotenv from "dotenv";
 
 // .envファイルの読み込み
 dotenv.config();
+
 // Geminiの初期化
 const genAI = new GoogleGenerativeAI(String(process.env.GEMINI_API_KEY));
 
