@@ -9,94 +9,45 @@ import { fetchDeepSeekResponse } from "../fetchAIResponse/fetchDeepSeekResponse"
 
 const router = express.Router();
 
-router
-  .get("/openai", getPromptMiddleware, async (req: Request, res: Response) => {
-    // OpenAIのレスポンスを取得
-    try {
-      // リクエストボディからプロンプトとチャットの入力を取得
-      const processedPrompt = req.body.processedPrompt;
-      const input = String(req.body.input);
+// 共通処理関数
+async function handleAIRequest(
+  fetchResponse: (input: string, prompt: string) => Promise<string>,
+  req: Request,
+  res: Response
+) {
+  try {
+    const processedPrompt = req.body.processedPrompt;
+    const input = String(req.body.input);
 
-      // レスポンスを取得
-      const ai_res = await fetchOpenAIResponse(input, processedPrompt);
-      res.status(200).json({
-        input: input,
-        message: ai_res,
-        prompt: processedPrompt,
-      });
-    } catch (error: any) {
-      res.status(500).json({
-        error: "OpenAIからのレスポンス取得に失敗しました。",
-        details: error.message,
-      });
-    }
-  })
-  .get("/gemini", getPromptMiddleware, async (req: Request, res: Response) => {
-    // Geminiのレスポンスを取得
-    try {
-      // リクエストボディからプロンプトとチャットの入力を取得
-      const processedPrompt = req.body.processedPrompt;
-      const input = String(req.body.input);
+    const ai_res = await fetchResponse(input, processedPrompt);
+    res.status(200).json({
+      input,
+      message: ai_res,
+      prompt: processedPrompt,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      error: `${fetchResponse.name}からのレスポンス取得に失敗しました。`,
+      details: error.message,
+    });
+  }
+}
 
-      // レスポンスを取得
-      const ai_res = await fetchGeminiResponse(input, processedPrompt);
-      res.status(200).json({
-        input: input,
-        message: ai_res,
-        prompt: processedPrompt,
-      });
-    } catch (error: any) {
-      res.status(500).json({
-        error: "Geminiからのレスポンス取得に失敗しました。",
-        details: error.message,
-      });
-    }
-  })
-  .get("/claude", getPromptMiddleware, async (req: Request, res: Response) => {
-    // Claudeのレスポンスを取得
-    try {
-      // リクエストボディからプロンプトとチャットの入力を取得
-      const processedPrompt = req.body.processedPrompt;
-      const input = String(req.body.input);
+// ルーティング
+router.post("/openai", getPromptMiddleware, (req, res) =>
+  handleAIRequest(fetchOpenAIResponse, req, res)
+);
 
-      // レスポンスを取得
-      const ai_res = await fetchClaudeResponse(input, processedPrompt);
-      res.status(200).json({
-        input: input,
-        message: ai_res,
-        prompt: processedPrompt,
-      });
-    } catch (error: any) {
-      res.status(500).json({
-        error: "Claudeからのレスポンス取得に失敗しました。",
-        details: error.message,
-      });
-    }
-  })
-  .get(
-    "/deepseek",
-    getPromptMiddleware,
-    async (req: Request, res: Response) => {
-      // DeepSeekのレスポンスを取得
-      try {
-        // リクエストボディからプロンプトとチャットの入力を取得
-        const processedPrompt = req.body.processedPrompt;
-        const input = String(req.body.input);
+router.post("/gemini", getPromptMiddleware, (req, res) =>
+  handleAIRequest(fetchGeminiResponse, req, res)
+);
 
-        // レスポンスを取得
-        const ai_res = await fetchDeepSeekResponse(input, processedPrompt);
-        res.status(200).json({
-          input: input,
-          message: ai_res,
-          prompt: processedPrompt,
-        });
-      } catch (error: any) {
-        res.status(500).json({
-          error: "DeepSeekからのレスポンス取得に失敗しました。",
-          details: error.message,
-        });
-      }
-    }
-  );
+router.post("/claude", getPromptMiddleware, (req, res) =>
+  handleAIRequest(fetchClaudeResponse, req, res)
+);
+
+router.post("/deepseek", getPromptMiddleware, (req, res) =>
+  handleAIRequest(fetchDeepSeekResponse, req, res)
+);
 
 export default router;
