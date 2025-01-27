@@ -9,7 +9,10 @@ services:
     volumes:
       - .:/$WORKDIR
     ports:
+      - "8080:8080" # コンテナの8080ポートをホストの8080ポートにマッピング
       - "$FIREBASE_CLI_PORT:$FIREBASE_CLI_PORT"
       - "$FIREBASE_UI_PORT:$FIREBASE_UI_PORT"
       - "$FIREBASE_FUNCTIONS_PORT:$FIREBASE_FUNCTIONS_PORT"
     tty: true
+    environment:
+      - PORT=8080 # 環境変数としてPORTを明示的に指定
