@@ -18,8 +18,8 @@ async function handleAIRequest(
   try {
     const processedPrompt = req.body.processedPrompt;
     const input = String(req.body.input);
-
     const ai_res = await fetchResponse(input, processedPrompt);
+
     res.status(200).json({
       input,
       message: ai_res,
